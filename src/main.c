@@ -7,41 +7,42 @@
 #include "main.h"
 
 int main(void) {
-    // Enable LED as output
-    // gpioEnable(GPIO_PORT_B);
-    // pinMode(LED_PIN, GPIO_OUTPUT);
-    // TODO: Display speed 
-
+    // TODO: figure out display
+    // For right now, will view output in the terminal
 
     // Enable encoder as input
-    gpioEnable(GPIO_PORT_A);
+    gpioEnable(GPIO_PORT_B);
     pinMode(ENCODER_A, GPIO_INPUT);
-    pinMode(ENCODER_B, GPIO_INPUT)
+    pinMode(ENCODER_B, GPIO_INPUT);
+    
+    // TODO: set pins as pull up
     // GPIOA->PUPDR |= _VAL2FLD(GPIO_PUPDR_PUPD2, 0b01); // Set PA2 as pull-up
 
     // Initialize timer
     RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
     initTIM(DELAY_TIM);
 
-    // TODO
-    // 1. Enable SYSCFG clock domain in RCC
+    // Enable SYSCFG clock domain in RCC
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-    // 2. Configure EXTICR for the input button interrupt
-    SYSCFG->EXTICR[1] |= _VAL2FLD(SYSCFG_EXTICR1_EXTI2, 0b000); // Select PA2
+
+    // Configure EXTICR for encoder interrupts
+    SYSCFG->EXTICR[1] |= _VAL2FLD(SYSCFG_EXTICR1_EXTI2, 0b000);
+    SYSCFG->EXTICR[2] |= _VAL2FLD(SYSCFG_EXTICR1_EXTI3, 0b000);
 
     // Enable interrupts globally
     __enable_irq();
 
-    // TODO: Configure interrupt for falling edge of GPIO pin for button
-    // 1. Configure mask bit
-    EXTI->IMR1 |= (1 << gpioPinOffset(BUTTON_PIN)); // Configure the mask bit
-    // 2. Disable rising edge trigger
-    EXTI->RTSR1 &= ~(1 << gpioPinOffset(BUTTON_PIN));// Disable rising edge trigger
-    // 3. Enable falling edge trigger
-    EXTI->FTSR1 |= (1 << gpioPinOffset(BUTTON_PIN));// Enable falling edge trigger
-    // 4. Turn on EXTI interrupt in NVIC_ISER
+    // Configure interrupt for falling edge of encoder A input
+    EXTI->IMR1 |= (1 << gpioPinOffset(ENCODER_A)); // Configure the mask bit
+    EXTI->RTSR1 &= ~(1 << gpioPinOffset(ENCODER_A));// Disable rising edge trigger
+    EXTI->FTSR1 |= (1 << gpioPinOffset(ENCODER_A));// Enable falling edge trigger
     NVIC->ISER[0] |= (1 << EXTI2_IRQn);
 
+    // Configure interrupt for falling edge of encoder B input
+    EXTI->IMR2 |= (1 << gpioPinOffset(ENCODER_A)); // Configure the mask bit
+    EXTI->RTSR2 &= ~(1 << gpioPinOffset(ENCODER_A));// Disable rising edge trigger
+    EXTI->FTSR2 |= (1 << gpioPinOffset(ENCODER_A));// Enable falling edge trigger
+    NVIC->ISER[0] |= (1 << EXTI3_IRQn);
 
     while(1){   
         delay_millis(TIM2, 200);

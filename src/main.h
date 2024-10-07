@@ -13,9 +13,8 @@
 // Custom defines
 ///////////////////////////////////////////////////////////////////////////////
 
-#define LED_PIN PA5
-#define ENCODER_A PA4
-#define ENCODER_B PA6
+#define ENCODER_A PB1
+#define ENCODER_B PB7
 #define DELAY_TIM TIM2
 
 #endif // MAIN_H
