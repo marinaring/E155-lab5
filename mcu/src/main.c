@@ -6,6 +6,19 @@
 
 #include "main.h"
 
+uint32_t motor_speed; 
+int motor_direction;
+
+// Function used by printf to send characters to the laptop
+int _write(int file, char *ptr, int len) {
+  int i = 0;
+  for (i = 0; i < len; i++) {
+    ITM_SendChar((*ptr++));
+  }
+  return len;
+}
+
+
 int main(void) {
     // Enable encoder as input
     gpioEnable(GPIO_PORT_B);
@@ -44,10 +57,10 @@ int main(void) {
     EXTI->FTSR2 |= (1 << gpioPinOffset(ENCODER_B));// Enable falling edge trigger
     NVIC->ISER[0] |= (1 << EXTI3_IRQn);
 
-
-    // TODO: display result
-
-    while(1){   
+    // update reading every 200 milliseconds
+    while(1) {
+        // display result
+        printf("Motor Speed: %f rev/s, Motor Direction: %s", motor_speed, (motor_direction) ? "CCW" : "CW");
         delay_millis(TIM2, 200);
     }
 
@@ -72,15 +85,24 @@ void EXTI3_IRQHandler(void){
         // If so, clear the interrupt (NB: Write 1 to reset.)
         EXTI->PR1 |= (1 << gpioPinOffset(ENCODER_B));
 
+        uint32_t counter = TIM3->CNT; // each count of the counter should be equivalent to 1 ms
+        uint32_t pulse_length;
+        uint32_t time_per_pulse;
+
         // check the counter and calculate speed and direction
         // if Encoder A is high at the same time as Encoder B, then the motor is spinning CCW
         if (~digitalRead(ENCODER_A)) {
-            
+            pulse_length = 4 * counter;
+            motor_direction = 1;
         } 
         // if Encoder A is low when Encoder B is high, then the motor is spinning CW
         else {
-
+            pulse_length = 4/3 * counter; 
+            motor_direction = 0;
         }
+
+        time_per_pulse = 1/pulse_length;
+        motor_speed = time_per_pulse * 1/120; // there are 120 pulses per revolution
 
     }
 }
