@@ -15,8 +15,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #define ENCODER_A PB1
-#define ENCODER_B PB7
+#define ENCODER_B PA5
 #define DELAY_TIM TIM2
-#define MEASURE_TIM TIM3
+#define MEASURE_TIM TIM6
 
 #endif // MAIN_H
