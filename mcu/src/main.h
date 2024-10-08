@@ -14,8 +14,8 @@
 // Custom defines
 ///////////////////////////////////////////////////////////////////////////////
 
-#define ENCODER_A PB1
-#define ENCODER_B PA5
+#define ENCODER_A PB7
+#define ENCODER_B PA9
 #define DELAY_TIM TIM2
 #define MEASURE_TIM TIM6
 

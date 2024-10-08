@@ -49,4 +49,6 @@ void configureClock(){
     // Select PLL as clock source
     RCC->CFGR |= (0b11 << 0);
     while(!((RCC->CFGR >> 2) & 0b11));
+
+    SystemCoreClockUpdate();
 }
