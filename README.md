@@ -1,0 +1,1 @@
+In this lab, I will be learning how to take advantage of interrupts to detect a pulse input and calculate direction and velocity of a motor. 

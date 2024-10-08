@@ -16,6 +16,18 @@ void initTIM(TIM_TypeDef * TIMx){
   TIMx->CR1 |= 1; // Set CEN = 1
 }
 
+void initTIM_FAST(TIM_TypeDef * TIMx){
+  // Set prescaler to give 0.01 ms time base
+  uint32_t psc_div = (uint32_t) ((SystemCoreClock/1e5));
+
+  // Set prescaler division factor
+  TIMx->PSC = (psc_div - 1);
+  // Generate an update event to update prescaler value
+  TIMx->EGR |= 1;
+  // Enable counter
+  TIMx->CR1 |= 1; // Set CEN = 1
+}
+
 void delay_millis(TIM_TypeDef * TIMx, uint32_t ms){
   TIMx->ARR = ms;// Set timer max count
   TIMx->EGR |= 1;     // Force update
