@@ -6,8 +6,7 @@
 
 #include "main.h"
 
-float motor_speed1; 
-float motor_speed2;
+float motor_speed;
 uint32_t counter1;
 uint32_t counter2;
 int motor_direction;
@@ -63,7 +62,7 @@ int main(void) {
     NVIC->ISER[0] |= (1 << EXTI9_5_IRQn); // turn on interrupt
 
     uint32_t prescaler, clock_freq;
-    float pulse_length1, pulse_length2, time_per_pulse, average_speed;
+    float pulse_length, time_per_pulse, average_speed;
 
     // update reading every 200 milliseconds
     while(1) {
@@ -73,23 +72,16 @@ int main(void) {
 
         // check the counter and calculate speed and direction
         if (motor_direction) {
-            pulse_length1 = 4.0/3.0 * ((float)(counter1 + counter2)/2.0);
-            pulse_length2 = 4.0/3.0 * ((float)(counter1 + counter2)/2.0);
+            pulse_length = 4.0/3.0 * ((float)(counter1 + counter2)/2.0);
         } 
         else {
-            pulse_length1 = 4.0 * ((float)(counter1 + counter2)/2.0); 
-            pulse_length2 = 4.0 * ((float)(counter1 + counter2)/2.0); 
+            pulse_length = 4.0 * ((float)(counter1 + counter2)/2.0);
         }
-        motor_speed1 = clock_freq/(120.0 * pulse_length1); // there are 120 pulses per revolution
-        motor_speed2 = clock_freq/(120.0 * pulse_length2); // there are 120 pulses per revolution
-
-        average_speed = (motor_speed1 + motor_speed2) * 0.5;
-       
+        motor_speed = clock_freq/(120.0 * pulse_length); // there are 120 pulses per revolution
+        
         // display result
-        printf("Motor Speed: %f rev/s, Motor Direction: %s \n", average_speed, (motor_direction) ? "CCW" : "CW");
+        printf("Motor Speed: %f rev/s, Motor Direction: %s \n", motor_speed, (motor_direction) ? "CCW" : "CW");
         delay_millis(DELAY_TIM, 200);
-        //printf("Motor Speed 2: %f rev/s, Motor Direction: %s \n", motor_speed2, (motor_direction) ? "CCW" : "CW");
-        //delay_millis(DELAY_TIM, 200);
     }
 
 }
